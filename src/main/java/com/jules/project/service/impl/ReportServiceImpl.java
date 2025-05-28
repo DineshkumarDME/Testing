@@ -28,8 +28,7 @@ public class ReportServiceImpl implements ReportService {
         // For now, using an empty data source and parameters
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(null); // Or new JREmptyDataSource();
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("REPORT_TITLE", "Dynamic Report Title for " + request.getReportName());
-        parameters.put("userId", authenticatedUserId); // Add authenticated user ID
+        parameters.put("userId", "admin"); // Add authenticated user ID
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 

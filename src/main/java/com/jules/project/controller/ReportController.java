@@ -27,8 +27,6 @@ public class ReportController {
     public ResponseEntity<byte[]> generateReport(@RequestBody ReportRequest reportRequest, @AuthenticationPrincipal Jwt jwt) throws Exception {
         String authenticatedUserId = jwt.getSubject();
         if (authenticatedUserId == null) {
-            // This case should ideally be handled by security configurations if a token without a sub is invalid
-            // Or, if sub is optional and another claim should be used, adjust logic here
             throw new IllegalStateException("User ID (subject) could not be determined from JWT.");
         }
 
