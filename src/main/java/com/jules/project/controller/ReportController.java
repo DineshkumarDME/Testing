@@ -31,10 +31,8 @@ public class ReportController {
         }
 
         byte[] reportBytes = reportService.generateReport(reportRequest, authenticatedUserId);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        // Optionally, use reportRequest.getReportName() for a dynamic filename
         headers.setContentDispositionFormData("filename", reportRequest.getReportName() + ".pdf"); 
 
         return new ResponseEntity<>(reportBytes, headers, HttpStatus.OK);

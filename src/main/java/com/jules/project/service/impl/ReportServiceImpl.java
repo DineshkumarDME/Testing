@@ -17,44 +17,45 @@ import java.util.Map;
 @Service
 public class ReportServiceImpl implements ReportService {
 
-    private final DataSource dataSource; // Add DataSource field
+	private final DataSource dataSource; // Add DataSource field
 
-    // Constructor injection for DataSource
-    public ReportServiceImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+	// Constructor injection for DataSource
+	public ReportServiceImpl(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
-    @Override
-    public byte[] generateReport(ReportRequest request, String authenticatedUserId) throws Exception {
-        String reportPath = "/reports/" + request.getReportName() + ".jrxml";
-        InputStream reportStream = getClass().getResourceAsStream(reportPath);
+	@Override
+	public byte[] generateReport(ReportRequest request, String authenticatedUserId) throws Exception {
+		String reportPath = "/reports/" + request.getReportName() + ".jrxml";
+		InputStream reportStream = getClass().getResourceAsStream(reportPath);
 
-        if (reportStream == null) {
-            throw new ReportTemplateNotFoundException("Report template not found at path: " + reportPath);
-        }
+		if (reportStream == null) {
+			throw new ReportTemplateNotFoundException("Report template not found at path: " + reportPath);
+		}
 
-        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+		JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("userId", "admin"); // Add authenticated user ID
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("userId", request.getUserId());
 
-        Connection connection = null;
-        try {
-            connection = dataSource.getConnection();
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
-            return JasperExportManager.exportReportToPdf(jasperPrint);
-        } catch (SQLException e) {
-            // Handle SQLException appropriately, e.g., log it and/or rethrow as a custom exception
-            throw new RuntimeException("Error obtaining/using JDBC connection for report generation", e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    // Log error or handle as appropriate, e.g., using a logger
-                    System.err.println("Failed to close JDBC connection: " + e.getMessage());
-                }
-            }
-        }
-    }
+		Connection connection = null;
+		try {
+			connection = dataSource.getConnection();
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
+			return JasperExportManager.exportReportToPdf(jasperPrint);
+		} catch (SQLException e) {
+			// Handle SQLException appropriately, e.g., log it and/or rethrow as a custom
+			// exception
+			throw new RuntimeException("Error obtaining/using JDBC connection for report generation", e);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// Log error or handle as appropriate, e.g., using a logger
+					System.err.println("Failed to close JDBC connection: " + e.getMessage());
+				}
+			}
+		}
+	}
 }
