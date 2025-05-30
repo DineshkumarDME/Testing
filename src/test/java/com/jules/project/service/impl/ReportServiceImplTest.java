@@ -42,12 +42,16 @@ class ReportServiceImplTest {
 		// Optional: Mock further behavior of mockConnection if needed for this test
 		// when(mockConnection.getMetaData()).thenReturn(mock(java.sql.DatabaseMetaData.class));
 
-		ReportRequest request = new ReportRequest("PDF", "admin", "test_report");
-		byte[] result = reportService.generateReport(request, "test-user-id");
-		assertNotNull(result);
-		assertTrue(result.length > 0);
-		// Further checks could involve PDF content validation if needed
-	}
+
+        ReportRequest request = new ReportRequest("PDF", "user123", "test_report");
+        com.jules.project.dto.ReportOutput result = reportService.generateReport(request, "test-user-id");
+        assertNotNull(result);
+        assertNotNull(result.getReportBytes());
+        assertTrue(result.getReportBytes().length > 0);
+        assertEquals("application/pdf", result.getContentType());
+        assertEquals(".pdf", result.getFileExtension());
+        // Further checks could involve PDF content validation if needed
+    }
 
 	@Test
 	void generateReport_templateNotFound() {
