@@ -1,7 +1,8 @@
 package com.jules.project.service;
 
+import com.jules.project.dto.ReportOutput;
 import com.jules.project.dto.ReportRequest;
 
 public interface ReportService {
-    byte[] generateReport(ReportRequest request, String authenticatedUserId) throws Exception;
+    ReportOutput generateReport(ReportRequest request, String authenticatedUserId) throws Exception;
 }
