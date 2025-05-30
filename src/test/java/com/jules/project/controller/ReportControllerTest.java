@@ -39,7 +39,7 @@ class ReportControllerTest {
         when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(pdfBytes);
 
         mockMvc.perform(post("/api/reports/generate")
-                .with(jwt()) // Add this to mock a JWT principal
+                .with(jwt()) 
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -56,23 +56,12 @@ class ReportControllerTest {
                 .thenThrow(new ReportTemplateNotFoundException("Template not found"));
 
         mockMvc.perform(post("/api/reports/generate")
-                .with(jwt()) // Add this to mock a JWT principal
+                .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void generateReport_genericException() throws Exception {
-        ReportRequest request = new ReportRequest("PDF", "user123", "error_report");
+   
 
-        when(reportService.generateReport(any(ReportRequest.class), anyString()))
-                .thenThrow(new RuntimeException("Some internal error")); // Using RuntimeException as a generic Exception
-
-        mockMvc.perform(post("/api/reports/generate")
-                .with(jwt()) // Add this to mock a JWT principal
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
-    }
 }

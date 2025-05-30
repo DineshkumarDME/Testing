@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.jules.project.aop.annotation.Auditable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    
     @PostMapping("/generate")
     public ResponseEntity<byte[]> generateReport(@RequestBody ReportRequest reportRequest, @AuthenticationPrincipal Jwt jwt) throws Exception {
         String authenticatedUserId = jwt.getSubject();
