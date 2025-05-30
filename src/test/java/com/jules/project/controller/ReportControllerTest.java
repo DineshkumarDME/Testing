@@ -35,8 +35,9 @@ class ReportControllerTest {
     void generateReport_success() throws Exception {
         ReportRequest request = new ReportRequest("PDF", "user123", "test_report");
         byte[] pdfBytes = "Sample PDF Content".getBytes();
+        com.jules.project.dto.ReportOutput mockReportOutput = new com.jules.project.dto.ReportOutput(pdfBytes, "application/pdf", ".pdf");
 
-        when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(pdfBytes);
+        when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(mockReportOutput);
 
         mockMvc.perform(post("/api/reports/generate")
                 .with(jwt()) // Add this to mock a JWT principal

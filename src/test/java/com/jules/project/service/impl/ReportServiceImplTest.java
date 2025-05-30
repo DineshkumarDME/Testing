@@ -41,9 +41,12 @@ class ReportServiceImplTest {
         // when(mockConnection.getMetaData()).thenReturn(mock(java.sql.DatabaseMetaData.class));
 
         ReportRequest request = new ReportRequest("PDF", "user123", "test_report");
-        byte[] result = reportService.generateReport(request, "test-user-id");
+        com.jules.project.dto.ReportOutput result = reportService.generateReport(request, "test-user-id");
         assertNotNull(result);
-        assertTrue(result.length > 0);
+        assertNotNull(result.getReportBytes());
+        assertTrue(result.getReportBytes().length > 0);
+        assertEquals("application/pdf", result.getContentType());
+        assertEquals(".pdf", result.getFileExtension());
         // Further checks could involve PDF content validation if needed
     }
 
