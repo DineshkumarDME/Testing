@@ -63,16 +63,53 @@ class ReportControllerTest {
     }
 
     @Test
-    void generateReport_genericException() throws Exception {
-        ReportRequest request = new ReportRequest("PDF", "user123", "error_report");
+    void generateReport_successXLS() throws Exception {
+        ReportRequest request = new ReportRequest("XLS", "user123", "xls_report");
+        byte[] xlsBytes = "Sample XLS Content".getBytes(); // Dummy content
 
-        when(reportService.generateReport(any(ReportRequest.class), anyString()))
-                .thenThrow(new RuntimeException("Some internal error")); // Using RuntimeException as a generic Exception
+        when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(xlsBytes);
 
         mockMvc.perform(post("/api/reports/generate")
-                .with(jwt()) // Add this to mock a JWT principal
+                .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/vnd.ms-excel"))
+                .andExpect(header().string("Content-Disposition", "form-data; name=\"filename\"; filename=\"xls_report.xls\""))
+                .andExpect(content().bytes(xlsBytes));
+    }
+
+    @Test
+    void generateReport_successXLSX() throws Exception {
+        ReportRequest request = new ReportRequest("XLSX", "user123", "xlsx_report");
+        byte[] xlsxBytes = "Sample XLSX Content".getBytes(); // Dummy content
+
+        when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(xlsxBytes);
+
+        mockMvc.perform(post("/api/reports/generate")
+                .with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .andExpect(header().string("Content-Disposition", "form-data; name=\"filename\"; filename=\"xlsx_report.xlsx\""))
+                .andExpect(content().bytes(xlsxBytes));
+    }
+
+    @Test
+    void generateReport_successCSV() throws Exception {
+        ReportRequest request = new ReportRequest("CSV", "user123", "csv_report");
+        byte[] csvBytes = "Sample CSV,Content".getBytes(); // Dummy content
+
+        when(reportService.generateReport(any(ReportRequest.class), anyString())).thenReturn(csvBytes);
+
+        mockMvc.perform(post("/api/reports/generate")
+                .with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "text/csv"))
+                .andExpect(header().string("Content-Disposition", "form-data; name=\"filename\"; filename=\"csv_report.csv\""))
+                .andExpect(content().bytes(csvBytes));
     }
 }
